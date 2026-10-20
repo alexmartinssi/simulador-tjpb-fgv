@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concursos TI · TJPB | Simulador FGV — Metodologia ABC Completa + PMD-100</title>
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --surface: #ffffff;
+      --surface-soft: #f8faff;
+      --ink: #17233c;
+      --muted: #63728a;
+      --border: #e3e8f0;
+      --blue: #365feb;
+      --blue-hover: #294fd1;
+      --blue-soft: #edf2ff;
+      --green: #1f8262;
+      --green-soft: #e9f7f2;
+      --warn: #b4690e;
+      --warn-soft: #fff6e8;
+      --red: #c93b3b;
+      --red-soft: #fdf0f0;
+      --side: #101b2f;
+      --radius: 16px;
+      --shadow: 0 6px 24px rgba(23, 35, 60, 0.06);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    header.hero {
+      background: linear-gradient(135deg, #101b2f 0%, #1d3158 100%);
+      color: #ffffff;
+      padding: 26px 0;
+      border-bottom: 4px solid var(--blue);
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #9cb6ff;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    header.hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      line-height: 1.2;
+    }
+
+    header.hero p {
+      margin: 0;
+      color: #d0dcf5;
+      max-width: 820px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tabs-bar {
+      display: flex;
+      gap: 8px;
+      margin: 22px 0 18px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--side);
+      color: #ffffff;
+      border-color: var(--side);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .abc-pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .pillar-box {
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+    }
+
+    .pillar-box h3 {
+      margin: 0 0 8px;
+      font-size: 0.96rem;
+      color: var(--side);
+    }
+
+    .pillar-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .tag-a { background: var(--green-soft); color: var(--green); }
+    .tag-b { background: var(--warn-soft); color: var(--warn); }
+    .tag-c { background: var(--red-soft); color: var(--red); }
+
+    .filter-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-soft);
+      border: 1px solid #d7e2ff;
+      padding: 14px 18px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+    }
+
+    .filter-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    select, input[type="number"] {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font: inherit;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.84rem;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--surface-soft);
+      border-color: #b8c6e0;
+    }
+
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .btn.success { background: var(--green); color: #fff; border-color: var(--green); }
+    .btn.warn { background: var(--warn); color: #fff; border-color: var(--warn); }
+    .btn.danger { background: var(--red); color: #fff; border-color: var(--red); }
+
+    /* Cabeçalho da Questão e Passada Tática */
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .q-badge-topic {
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-weight: 800;
+      font-size: 0.76rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .pass-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .pass-btn {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 0.73rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .pass-btn.active-P1 { background: var(--green-soft); color: var(--green); border-color: #a9dfce; }
+    .pass-btn.active-P2 { background: var(--warn-soft); color: var(--warn); border-color: #f5d8a8; }
+    .pass-btn.active-P3 { background: var(--red-soft); color: var(--red); border-color: #f3c0c0; }
+
+    .q-statement {
+      margin-bottom: 16px;
+      font-size: 0.96rem;
+    }
+
+    pre {
+      background: #101b2f;
+      color: #e6edf8;
+      padding: 14px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      margin: 12px 0;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .option-btn {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      text-align: left;
+      padding: 12px 15px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: #ffffff;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .option-btn.selected { border-color: var(--blue); background: var(--blue-soft); }
+    .option-btn.correct { border-color: var(--green); background: var(--green-soft); }
+    .option-btn.wrong { border-color: var(--red); background: var(--red-soft); }
+    .option-btn.eliminated .opt-text { text-decoration: line-through; opacity: 0.45; }
+    .option-btn.strong-cand { border-style: dashed; border-color: var(--green); }
+
+    .opt-letter {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.82rem;
+    }
+
+    .option-btn.selected .opt-letter { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .option-btn.correct .opt-letter { background: var(--green); color: #fff; border-color: var(--green); }
+    .option-btn.wrong .opt-letter { background: var(--red); color: #fff; border-color: var(--red); }
+
+    .triage-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .triage-btn {
+      padding: 6px 9px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 0.73rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .triage-btn.active-strong { background: var(--green-soft); color: var(--green); border-color: #a9dfce; }
+    .triage-btn.active-doubt { background: var(--warn-soft); color: var(--warn); border-color: #f5d8a8; }
+    .triage-btn.active-cut { background: var(--red-soft); color: var(--red); border-color: #f3c0c0; }
+
+    /* Barra de Confiança ABC */
+    .confidence-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .conf-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .conf-btn {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .conf-btn.active-A { background: var(--green); color: #fff; border-color: var(--green); }
+    .conf-btn.active-B { background: var(--warn); color: #fff; border-color: var(--warn); }
+    .conf-btn.active-C { background: var(--red); color: #fff; border-color: var(--red); }
+
+    .calibration-alert {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .calibration-alert.warn { background: var(--warn-soft); color: var(--warn); border: 1px solid #f5d8a8; }
+    .calibration-alert.danger { background: var(--red-soft); color: var(--red); border: 1px solid #f3c0c0; }
+    .calibration-alert.ok { background: var(--green-soft); color: var(--green); border: 1px solid #bde5d7; }
+
+    .explanation-box {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #f8fafd;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .exp-item {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border);
+    }
+    .exp-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .tag-ok { color: var(--green); font-weight: 800; }
+    .tag-err { color: var(--red); font-weight: 800; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .stat-card {
+      padding: 16px;
+      border-radius: 12px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+    }
+
+    .stat-label { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--muted); }
+    .stat-value { display: block; font-size: 1.4rem; font-weight: 800; color: var(--side); margin: 4px 0; }
+
+    table.abc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.88rem;
+    }
+
+    table.abc-table th, table.abc-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    table.abc-table th {
+      background: var(--surface-soft);
+      color: var(--side);
+      font-weight: 800;
+    }
+
+    @media (max-width: 680px) {
+      .option-row { flex-direction: column; }
+      .triage-actions { justify-content: flex-end; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="container">
+      <div class="eyebrow">Concursos TI · TJPB · Analista de Sistemas (Desenvolvimento)</div>
+      <h1>🎯 Plataforma FGV — Metodologia ABC Completa + PMD-100</h1>
+      <p>Sistema de resolução tática em 3 passadas (A/B/C), eliminação visual de alternativas, matriz de calibração metacognitiva e controle de domínio por microassunto.</p>
+      <div class="badges">
+        <span class="badge">Banca: FGV</span>
+        <span class="badge">Questões no Simulador: 8</span>
+        <span class="badge">Metodologia: ABC 4 Pilares + PMD-100 v2</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="topbar">
+    <div class="container topbar-inner">
+      <div>
+        <strong id="topCounterBadge" style="color: var(--blue);">Exibindo: 8 de 8 questões</strong>
+        <span style="margin: 0 8px; color: var(--muted);">|</span>
+        <span id="topScoreBadge" style="font-weight: 700;">Respondidas: 0/8 · Acertos: 0</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn primary" onclick="checkAllVisible()">✔ Corrigir Respondidas</button>
+        <button class="btn" onclick="resetSimulator()">↺ Reiniciar Simulado</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="tabs-bar">
+      <button class="tab-btn active" data-tab="tab-simulador">1. Simulador ABC (8 Questões)</button>
+      <button class="tab-btn" data-tab="tab-guia-abc">2. Guia da Metodologia ABC</button>
+      <button class="tab-btn" data-tab="tab-matriz">3. Matriz ABC & PMD-100</button>
+      <button class="tab-btn" data-tab="tab-erros">4. Caderno de Erros & Revisões</button>
+    </div>
+
+    <!-- ABA 1: SIMULADOR ABC -->
+    <section id="tab-simulador" class="tab-panel active">
+      <div class="filter-toolbar">
+        <div class="filter-controls">
+          <label for="topicFilter"><strong>Microassunto:</strong></label>
+          <select id="topicFilter" onchange="renderSimulator()">
+            <option value="ALL" selected>📚 Todos os Microassuntos (8 Questões)</option>
+            <option value="A04T01">A04T01 — POO: os quatro pilares (5 Questões)</option>
+            <option value="A04T02">A04T02 — Classes, objetos e interfaces (1 Questão)</option>
+            <option value="A05T01">A05T01 — Princípios SOLID e Clean Code (1 Questão)</option>
+            <option value="A06T01">A06T01 — Modelagem Relacional e SQL (1 Questão)</option>
+          </select>
+
+          <label for="passFilter"><strong>Passada ABC:</strong></label>
+          <select id="passFilter" onchange="renderSimulator()">
+            <option value="ALL" selected>🔄 Todas as Passadas</option>
+            <option value="P1">⚡ 1ª Passada [A] — Ataque Rápido</option>
+            <option value="P2">⏳ 2ª Passada [B] — Pular / Trabalhosa</option>
+            <option value="P3">🧨 3ª Passada [C] — Chute Técnico / Difícil</option>
+          </select>
+
+          <label for="viewModeSelect"><strong>Modo:</strong></label>
+          <select id="viewModeSelect" onchange="renderSimulator()">
+            <option value="LIST" selected>📋 Lista Completa</option>
+            <option value="SINGLE">🎯 Modo Foco (1 por vez)</option>
+          </select>
+        </div>
+
+        <div id="focusNavBox" style="display:none; gap:8px; align-items:center;">
+          <button class="btn" onclick="stepQuestion(-1)">◀ Anterior</button>
+          <strong id="focusPositionText">1 / 8</strong>
+          <button class="btn" onclick="stepQuestion(1)">Próxima ▶</button>
+        </div>
+      </div>
+
+      <div id="questionsContainer"></div>
+    </section>
+
+    <!-- ABA 2: GUIA COMPLETO DA METODOLOGIA ABC -->
+    <section id="tab-guia-abc" class="tab-panel">
+      <div class="card">
+        <h2 style="margin-top:0;">🧭 Como Funciona a Metodologia ABC Aplicada à Banca FGV (TJPB)</h2>
+        <p style="color:var(--muted);">A FGV vence o candidato pelo cansaço mental em enunciados longos e pela dúvida entre duas alternativas muito parecidas. O Método ABC atua em 4 dimensões simultâneas:</p>
+
+        <div class="abc-pillars-grid">
+          <div class="pillar-box">
+            <span class="pillar-tag tag-a">Dimensão 1 · Tempo de Prova</span>
+            <h3>Passada Tática ABC</h3>
+            <p><strong>[A] 1ª Passada (Ataque):</strong> Questões que você bate o olho e reconhece o padrão FGV. Resolva em menos de 1,5 min.<br>
+            <strong>[B] 2ª Passada (Trabalhosa):</strong> Questões que você sabe a matéria, mas exigem rastrear código Java ou SQL. Marque <em>"2ª Passada [B]"</em> e volte depois.<br>
+            <strong>[C] 3ª Passada (Armadilha):</strong> Tema obscuro. Não perca 10 minutos nela; deixe para o final.</p>
+          </div>
+
+          <div class="pillar-box">
+            <span class="pillar-tag tag-b">Dimensão 2 · Alternativas</span>
+            <h3>Eliminação Visual ABC</h3>
+            <p>Nunca tente achar a certa de primeira na FGV; cace os erros absolutos:<br>
+            • <strong>[✖ Riscar]:</strong> Tacha visualmente os 3 distratores absurdos.<br>
+            • <strong>[? Dúvida]:</strong> Isola as 2 alternativas sobreviventes para comparar palavra por palavra.<br>
+            • <strong>[✔ Forte]:</strong> Destaca a candidata principal.</p>
+          </div>
+
+          <div class="pillar-box">
+            <span class="pillar-tag tag-c">Dimensão 3 · Metacognição</span>
+            <h3>Calibração de Confiança</h3>
+            <p>Antes de ver o gabarito, declare sua confiança:<br>
+            • <strong>[A] Certeza + Erro = Ponto Cego:</strong> A pior falha possível (você caiu na pegadinha achando que sabia).<br>
+            • <strong>[C] Chute + Acerto = Falso Positivo:</strong> O ponto conta na prova, mas no estudo exige revisão obrigatória.</p>
+          </div>
+
+          <div class="pillar-box">
+            <span class="pillar-tag tag-a">Dimensão 4 · PMD-100</span>
+            <h3>Domínio ABC por Assunto</h3>
+            <p>Classificação real por microassunto (mínimo de 3 questões):<br>
+            • <strong>Classe A (≥ 80%):</strong> Manutenção espaçada (D+21, D+45).<br>
+            • <strong>Classe B (60% a 79%):</strong> Reforço de questões e pegadinhas.<br>
+            • <strong>Classe C (&lt; 60%):</strong> Reestudo imediato da base + revisão D+1.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: MATRIZ ABC & PMD-100 -->
+    <section id="tab-matriz" class="tab-panel">
+      <div class="card">
+        <h2 style="margin-top:0;">📊 Matriz de Calibração Metacognitiva ABC (Sessão Atual)</h2>
+        <p style="color:var(--muted);">Diagnóstico cruzando o seu Grau de Confiança declarado (A/B/C) com o resultado real nas 8 questões:</p>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Domínio Real ([A] + Acerto)</span>
+            <strong class="stat-value" id="statConfAHit" style="color:var(--green);">0</strong>
+            <small>Marcou Certeza [A] e acertou</small>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Ponto Cego FGV ([A] + Erro)</span>
+            <strong class="stat-value" id="statConfAErr" style="color:var(--red);">0</strong>
+            <small>Marcou Certeza [A], mas caiu na pegadinha</small>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Dúvida entre 2 ([B])</span>
+            <strong class="stat-value" id="statConfBTotal" style="color:var(--warn);">0</strong>
+            <small id="statConfBDetail">0 acertos / 0 erros em dúvida</small>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Falso Positivo ([C] + Acerto)</span>
+            <strong class="stat-value" id="statConfCHit" style="color:var(--blue);">0</strong>
+            <small>Acertou no chute — revisar teoria!</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0;">🏛️ Classificação ABC por Microassunto (Regra PMD-100)</h2>
+        <p style="color:var(--muted);">Separação estrita entre <strong>Questões Sintéticas (Autoral — estilo simulado FGV)</strong> e <strong>Questões Reais FGV</strong>. A classificação A/B/C oficial exige amostragem mínima de 3 questões.</p>
+
+        <table class="abc-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Microassunto</th>
+              <th>Sintéticas (Backup + Sessão)</th>
+              <th>Questões Reais FGV</th>
+              <th>Classe ABC (PMD-100)</th>
+            </tr>
+          </thead>
+          <tbody id="topicMatrixBody"></tbody>
+        </table>
+
+        <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+          <strong>Registrar Bateria de Prova Real FGV (fora do simulador sintético):</strong>
+          <select id="realTopicSelect">
+            <option value="A04T01">A04T01 — POO: os quatro pilares</option>
+            <option value="A04T02">A04T02 — Classes, objetos e interfaces</option>
+            <option value="A05T01">A05T01 — Princípios SOLID e Clean Code</option>
+            <option value="A06T01">A06T01 — Modelagem Relacional e SQL</option>
+          </select>
+          <input type="number" id="realHitsInput" placeholder="Acertos" min="0" max="50" style="width:95px;" />
+          <input type="number" id="realTotalInput" placeholder="Total" min="1" max="50" style="width:95px;" />
+          <button class="btn primary" onclick="registerRealAttempt()">+ Registrar Reais FGV</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 4: CADERNO DE ERROS E REVISÕES -->
+    <section id="tab-erros" class="tab-panel">
+      <div class="card">
+        <h2 style="margin-top:0;">📅 Cronograma de Revisões Espaçadas (PMD-100)</h2>
+        <p style="color:var(--muted);">Baseado no estudo real registrado em <strong>14/10/2026</strong> para <strong>A04T01 — POO: os quatro pilares</strong>:</p>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Revisão D+1</span>
+            <strong class="stat-value">15/10/2026</strong>
+            <small style="color:var(--warn); font-weight:700;">⚡ Revisão imediata</small>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Revisão D+7</span>
+            <strong class="stat-value">21/10/2026</strong>
+            <small>Janela de curto prazo</small>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Revisão D+21</span>
+            <strong class="stat-value">04/11/2026</strong>
+            <small>Consolidação</small>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Revisão D+45</span>
+            <strong class="stat-value">28/11/2026</strong>
+            <small>Retenção de longo prazo</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0;">📓 Caderno de Erros & Fila de Prioridade ABC</h2>
+        <p style="color:var(--muted);">Questões erradas com Certeza [A] (Pontos Cegos) ou enviadas manualmente aparecem priorizadas abaixo:</p>
+        <div id="errorNotebookList"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const LETTERS = ["A", "B", "C", "D", "E"];
+
+    // 8 QUESTÕES COMPLETAS (Autoral — estilo simulado FGV)
+    const QUESTIONS = [
+      {
+        id: "Q1-A04T01",
+        topic: "A04T01",
+        topicName: "POO: os quatro pilares",
+        defaultPass: "P1",
+        title: "Questão 1 · Encapsulamento e Proteção de Invariantes",
+        statement: `Na equipe de Desenvolvimento de Sistemas do TJPB, um analista está refatorando o módulo de emissão de alvarás eletrônicos. Ele identificou que a classe <code>AlvaraJudicial</code> expunha diretamente o atributo <code>public String statusAssinatura;</code>, permitindo que qualquer classe externa alterasse o status para <code>"ASSINADO"</code> sem validar se o certificado digital do magistrado estava ativo. Para corrigir essa falha arquitetural, o analista alterou o atributo para <code>private</code> e criou o método <code>public void assinar(Certificado cert)</code>, que verifica a validade do certificado antes de modificar o estado interno do objeto.<br><br>Sob a ótica dos quatro pilares da Programação Orientada a Objetos cobrados pela FGV, a refatoração realizada aplica diretamente o princípio do(a):`,
+        options: [
+          "Polimorfismo paramétrico, pois o método assinar restringe o tipo de dado aceito como parâmetro para garantir a segurança.",
+          "Abstração pura, visto que a criação de atributos privados elimina a necessidade de instanciar objetos concretos na memória.",
+          "Encapsulamento, pois protege o estado interno do objeto contra modificações inválidas e condiciona a alteração às regras de negócio da própria classe.",
+          "Herança múltipla, uma vez que a classe AlvaraJudicial passa a depender do comportamento interno da classe Certificado.",
+          "Coesão estática, que determina que todos os atributos de uma classe devem possuir métodos getters e setters públicos irrestritos."
+        ],
+        correct: 2,
+        explanations: [
+          "Incorreta. Polimorfismo paramétrico refere-se ao uso de Generics (ex.: List<T>).",
+          "Incorreta. Atributos privados não impedem a instanciação da classe e o foco em ocultar o estado pertence ao encapsulamento.",
+          "Correta! O encapsulamento combina ocultação de estado (private) com métodos que protegem as invariantes de negócio da classe.",
+          "Incorreta. Receber Certificado como parâmetro configura relação de dependência/associação, não herança.",
+          "Incorreta. Pegadinha FGV: criar getters e setters públicos irrestritos sem validação enfraquece o encapsulamento."
+        ]
+      },
+      {
+        id: "Q2-A04T01",
+        topic: "A04T01",
+        topicName: "POO: os quatro pilares",
+        defaultPass: "P2",
+        title: "Questão 2 · Sobrecarga (Compilação) vs. Sobrescrita (Execução)",
+        statement: `Considere o seguinte trecho de código escrito em Java 17, utilizado em um sistema de mensageria processual:
+<pre><code>class Notificador {
+    public String enviar(Object msg) { return "Notificador:Object"; }
+    public String enviar(String msg) { return "Notificador:String"; }
+}
+class NotificadorUrgente extends Notificador {
+    @Override
+    public String enviar(Object msg) { return "Urgente:Object"; }
+}
+public class TesteEnvio {
+    public static void main(String[] args) {
+        Notificador n = new NotificadorUrgente();
+        Object textoComoObjeto = "Intimação Eletrônica";
+        System.out.println(n.enviar(textoComoObjeto) + " | " + n.enviar("Citação"));
+    }
+}</code></pre>
+Ao compilar e executar a classe <code>TesteEnvio</code>, a saída impressa no console será:`,
+        options: [
+          "Urgente:Object | Notificador:String",
+          "Notificador:String | Notificador:String",
+          "Urgente:Object | Urgente:Object",
+          "Notificador:Object | Notificador:String",
+          "Erro de compilação, pois a subclasse NotificadorUrgente não sobrescreveu ambas as versões sobrecarregadas do método enviar."
+        ],
+        correct: 0,
+        explanations: [
+          "Correta! Na 1ª chamada, o tipo declarado do argumento é Object (escolhe enviar(Object) na compilação) e o objeto real é NotificadorUrgente (executa a sobrescrita 'Urgente:Object'). Na 2ª chamada, o literal é String (executa enviar(String) herdado de Notificador).",
+          "Incorreta. A escolha da sobrecarga usa o tipo em tempo de compilação (Object) e não o tipo em runtime.",
+          "Incorreta. Ignora a sobrecarga específica enviar(String) herdada da superclasse.",
+          "Incorreta. Ignora o despacho dinâmico (Overriding) na primeira chamada.",
+          "Incorreta. A subclasse não é obrigada a sobrescrever métodos concretos da superclasse."
+        ]
+      },
+      {
+        id: "Q3-A04T01",
+        topic: "A04T01",
+        topicName: "POO: os quatro pilares",
+        defaultPass: "P1",
+        title: "Questão 3 · Abstração, Herança e Polimorfismo em Classes Abstratas",
+        statement: `Durante a modelagem do sistema de tramitação de precatórios do TJPB, um desenvolvedor precisa representar entidades que compartilham características comuns (como <code>numeroProcesso</code> e <code>dataAutuacao</code>), mas que possuem regras de cálculo de atualização monetária completamente distintas conforme a natureza do crédito (Alimentar ou Comum). Além disso, nenhuma instância genérica de precatório deve existir no sistema sem que seja especificamente Alimentar ou Comum.<br><br>Para atender corretamente a esses requisitos utilizando os pilares da Orientação a Objetos, a solução de modelagem mais adequada é:`,
+        options: [
+          "Declarar Precatorio como uma classe final contendo o método concreto atualizarValor(), impedindo que classes filhas alterem a regra de cálculo.",
+          "Declarar Precatorio como uma classe abstrata (abstract class) com os atributos comuns e o método abstrato atualizarValor(), obrigando as subclasses concretas PrecatorioAlimentar e PrecatorioComum a implementarem o cálculo via sobrescrita.",
+          "Criar duas classes independentes sem relação de herança ou interface e copiar os atributos numeroProcesso e dataAutuacao em ambas, aplicando o polimorfismo de sobrecarga.",
+          "Declarar Precatorio como uma classe concreta com construtor public e utilizar apenas variáveis globais estáticas (static) para diferenciar o cálculo.",
+          "Utilizar exclusivamente o encapsulamento na classe Precatorio, declarando a classe como private no nível de pacote para bloquear sua instanciação."
+        ],
+        correct: 1,
+        explanations: [
+          "Incorreta. Classe final não pode ser herdada.",
+          "Correta! Classe abstrata impede instanciação direta, compartilha estado comum via herança e exige sobrescrita polimórfica do método abstrato.",
+          "Incorreta. Duplica código e impede o tratamento polimórfico unificado.",
+          "Incorreta. Construtor público em classe concreta permitiria instanciar objetos genéricos.",
+          "Incorreta. Classes top-level em Java não podem ser private."
+        ]
+      },
+      {
+        id: "Q4-A04T01",
+        topic: "A04T01",
+        topicName: "POO: os quatro pilares",
+        defaultPass: "P1",
+        title: "Questão 4 · Julgamento de Afirmativas sobre Herança e Assinatura",
+        statement: `A respeito das relações de Herança, Polimorfismo e Interfaces na Programação Orientada a Objetos, analise as afirmativas a seguir:<br><br>
+<strong>I.</strong> A herança estabelece uma relação do tipo <em>"é-um" (is-a)</em> e promove acoplamento forte entre subclasse e superclasse (problema da classe-base frágil).<br>
+<strong>II.</strong> O polimorfismo de inclusão (subtipagem) permite que uma referência do tipo da superclasse aponte, em tempo de execução, para objetos de qualquer subclasse concreta.<br>
+<strong>III.</strong> Na sobrecarga de métodos (<em>overloading</em>), a simples alteração do tipo de retorno do método, mantendo-se idênticos o nome e a lista de tipos de parâmetros na mesma classe, é suficiente para o compilador diferenciar as chamadas.<br><br>
+Está correto o que se afirma em:`,
+        options: [
+          "I, apenas.",
+          "II, apenas.",
+          "I e II, apenas.",
+          "II e III, apenas.",
+          "I, II e III."
+        ],
+        correct: 2,
+        explanations: [
+          "Incorreta. II também está correta.",
+          "Incorreta. I também está correta.",
+          "Correta! I e II são verdadeiras. A III é falsa porque o tipo de retorno NÃO faz parte da assinatura para fins de sobrecarga.",
+          "Incorreta. III é falsa.",
+          "Incorreta. III é falsa."
+        ]
+      },
+      {
+        id: "Q5-A04T01",
+        topic: "A04T01",
+        topicName: "POO: os quatro pilares",
+        defaultPass: "P2",
+        title: "Questão 5 · Métodos Estáticos e Ocultação (Method Hiding) vs. Polimorfismo",
+        statement: `Analise o código Java abaixo, referente ao cálculo de prazos processuais no TJPB:
+<pre><code>class CalculadoraPrazo {
+    public static String tipoContagem() { return "Dias Corridos"; }
+    public int calcular(int dias) { return dias; }
+}
+class CalculadoraPrazoCPC extends CalculadoraPrazo {
+    public static String tipoContagem() { return "Dias Úteis"; }
+    @Override
+    public int calcular(int dias) { return dias + 2; }
+}
+public class Main {
+    public static void main(String[] args) {
+        CalculadoraPrazo ref = new CalculadoraPrazoCPC();
+        System.out.println(ref.tipoContagem() + " - " + ref.calcular(5));
+    }
+}</code></pre>
+Assinale a alternativa que apresenta a saída correta e a respectiva justificativa conceitual cobrada pela FGV:`,
+        options: [
+          "Dias Úteis - 7, pois tanto métodos estáticos quanto métodos de instância sofrem ligação tardia (late binding).",
+          "Dias Corridos - 7, pois métodos static não sofrem sobrescrita polimórfica (são resolvidos em compilação pelo tipo da referência), enquanto métodos de instância sofrem despacho dinâmico em execução.",
+          "Dias Corridos - 5, pois a variável ref foi declarada com o tipo estático CalculadoraPrazo.",
+          "Dias Úteis - 5, pois métodos static têm prioridade de execução na subclasse.",
+          "Erro de compilação, pois não é permitido declarar um método static com a mesma assinatura na subclasse."
+        ],
+        correct: 1,
+        explanations: [
+          "Incorreta. Métodos static não participam de polimorfismo dinâmico; ocorre ocultação (method hiding) resolvida em tempo de compilação.",
+          "Correta! ref.tipoContagem() olha para o tipo declarado CalculadoraPrazo ('Dias Corridos'), enquanto ref.calcular(5) faz despacho dinâmico para CalculadoraPrazoCPC ('7').",
+          "Incorreta. O método de instância calcular(5) sofre sobrescrita e retorna 7.",
+          "Incorreta. Inverte ambos os conceitos.",
+          "Incorreta. Declarar o mesmo método static na subclasse é válido em Java e caracteriza method hiding."
+        ]
+      },
+      {
+        id: "Q6-A04T02",
+        topic: "A04T02",
+        topicName: "Classes, objetos e interfaces",
+        defaultPass: "P1",
+        title: "Questão 6 · Classes Abstratas vs. Interfaces (Java 8+)",
+        statement: `No projeto de evolução do Processo Judicial Eletrônico (PJe) do TJPB, a equipe discute se deve modelar o contrato <code>AssinadorDigital</code> como uma <code>interface</code> ou como uma <code>abstract class</code> em Java 17. Considerando as regras da linguagem Java e a jurisprudência de banca da FGV, assinale a afirmativa correta:`,
+        options: [
+          "Interfaces em Java 17 podem declarar atributos de instância mutáveis (não estáticos) para guardar o PIN do token do magistrado.",
+          "Uma classe concreta pode estender múltiplas classes abstratas simultaneamente, mas pode implementar apenas uma interface.",
+          "Interfaces podem conter métodos default e static com corpo implementado, permitindo que uma classe implemente múltiplas interfaces, mas não podem manter estado de instância nem construtores.",
+          "Classes abstratas não podem possuir métodos concretos nem construtores, servindo apenas para declarar assinaturas vazias.",
+          "Se uma classe implementa duas interfaces que possuem um método default com a mesma assinatura, o compilador escolhe automaticamente a primeira interface listada na cláusula implements."
+        ],
+        correct: 2,
+        explanations: [
+          "Incorreta. Todo atributo declarado em uma interface Java é implicitamente public, static e final.",
+          "Incorreta. Java suporta herança simples de classe e implementação múltipla de interfaces.",
+          "Correta! Interfaces a partir do Java 8 suportam métodos default e static, mas não possuem construtores nem estado de instância.",
+          "Incorreta. Classes abstratas podem ter construtores e métodos concretos.",
+          "Incorreta. Ocorre conflito e a classe implementadora é obrigada a sobrescrever o método para desambiguar."
+        ]
+      },
+      {
+        id: "Q7-A05T01",
+        topic: "A05T01",
+        topicName: "Princípios SOLID e Clean Code",
+        defaultPass: "P1",
+        title: "Questão 7 · Princípio da Inversão de Dependência (DIP) e OCP",
+        statement: `Um analista do TJPB observou que a classe de negócio <code>PublicadorDiarioJustica</code> instancia diretamente, dentro do seu construtor, a classe concreta <code>ClienteSmtpLegado</code> usando <code>new ClienteSmtpLegado()</code>. Sempre que o tribunal precisa trocar o provedor de envio (por exemplo, para API REST ou fila RabbitMQ), é necessário alterar e recompilar a classe <code>PublicadorDiarioJustica</code>.<br><br>De acordo com os princípios SOLID cobrados pela FGV, esse código viola diretamente:`,
+        options: [
+          "Apenas o Princípio da Segregação de Interfaces (ISP), que proíbe o uso da palavra-chave new em qualquer classe do sistema.",
+          "O Princípio da Inversão de Dependência (DIP) e o Princípio Aberto-Fechado (OCP), pois o módulo de alto nível depende de uma implementação concreta de baixo nível em vez de depender de uma abstração (interface).",
+          "O Princípio da Substituição de Liskov (LSP), pois a classe PublicadorDiarioJustica não herda de ClienteSmtpLegado.",
+          "A Lei de Demeter, que exige que todas as classes de negócio sejam declaradas como static.",
+          "O padrão Singleton, único capaz de permitir o envio de mensagens em sistemas web."
+        ],
+        correct: 1,
+        explanations: [
+          "Incorreta. O ISP trata de dividir interfaces 'gordas' em interfaces menores e coesas.",
+          "Correta! Pelo DIP, módulos de alto nível devem depender de abstrações (interfaces) e não de detalhes concretos, favorecendo também o OCP.",
+          "Incorreta. LSP trata da substituibilidade de subtipos.",
+          "Incorreta. Lei de Demeter trata do princípio do menor conhecimento.",
+          "Incorreta. Singleton restringe a instanciação a um único objeto."
+        ]
+      },
+      {
+        id: "Q8-A06T01",
+        topic: "A06T01",
+        topicName: "Modelagem Relacional e SQL",
+        defaultPass: "P2",
+        title: "Questão 8 · Comportamento de NULL com COUNT e NOT IN na FGV",
+        statement: `No banco de dados relacional do TJPB, a tabela <code>PROCESSO</code> possui 100 linhas, sendo que a coluna <code>id_magistrado_relator</code> contém valor <code>NULL</code> em 15 dessas linhas. Já a tabela auxiliar <code>IMPEDIMENTO</code> possui 5 linhas, e em uma delas a coluna <code>id_magistrado</code> está com valor <code>NULL</code>.<br><br>Considerando o padrão ANSI SQL cobrado pela FGV, assinale a afirmação correta sobre a execução de consultas nessas tabelas:`,
+        options: [
+          "A consulta SELECT COUNT(id_magistrado_relator) FROM PROCESSO; retornará o valor 100, pois a função COUNT(coluna) contabiliza valores nulos.",
+          "A consulta SELECT * FROM PROCESSO WHERE id_magistrado_relator NOT IN (SELECT id_magistrado FROM IMPEDIMENTO); retornará 0 linhas caso a subconsulta retorne ao menos um valor NULL.",
+          "A condição WHERE id_magistrado_relator = NULL retornará exatamente as 15 linhas sem relator atribuído.",
+          "A cláusula GROUP BY id_magistrado_relator descartará automaticamente as 15 linhas com NULL, não criando grupo para elas.",
+          "A função COALESCE(id_magistrado_relator, 0) retorna NULL sempre que o primeiro argumento for diferente de zero."
+        ],
+        correct: 1,
+        explanations: [
+          "Incorreta. COUNT(coluna) ignora valores NULL e retornaria 85.",
+          "Correta! Clássico FGV: NOT IN com qualquer valor NULL no conjunto avalia como UNKNOWN, retornando 0 linhas.",
+          "Incorreta. Comparação com NULL exige IS NULL.",
+          "Incorreta. GROUP BY agrupa valores NULL em um grupo próprio.",
+          "Incorreta. COALESCE retorna o primeiro valor não nulo."
+        ]
+      }
+    ];
+
+    // Metadados dos Microassuntos (incluindo backup de 14/10/2026 para A04T01)
+    const TOPICS_META = {
+      A04T01: { name: "POO: os quatro pilares", baseSynHits: 9, baseSynTotal: 10, realHits: 0, realTotal: 0 },
+      A04T02: { name: "Classes, objetos e interfaces", baseSynHits: 0, baseSynTotal: 0, realHits: 0, realTotal: 0 },
+      A05T01: { name: "Princípios SOLID e Clean Code", baseSynHits: 0, baseSynTotal: 0, realHits: 0, realTotal: 0 },
+      A06T01: { name: "Modelagem Relacional e SQL", baseSynHits: 0, baseSynTotal: 0, realHits: 0, realTotal: 0 }
+    };
+
+    const state = {
+      selected: Array(QUESTIONS.length).fill(null),
+      confidence: Array(QUESTIONS.length).fill(null), // 'A', 'B', 'C'
+      pass: QUESTIONS.map(q => q.defaultPass), // 'P1', 'P2', 'P3'
+      checked: Array(QUESTIONS.length).fill(false),
+      triage: QUESTIONS.map(() => Array(5).fill(null)), // 'strong' | 'doubt' | 'cut' | null
+      focusIndex: 0,
+      errorNotes: []
+    };
+
+    // Abas
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+        updateStats();
+      });
+    });
+
+    function getFilteredIndices() {
+      const topic = document.getElementById("topicFilter").value;
+      const pass = document.getElementById("passFilter").value;
+      return QUESTIONS.map((q, idx) => ({ q, idx }))
+        .filter(item => (topic === "ALL" || item.q.topic === topic) && (pass === "ALL" || state.pass[item.idx] === pass))
+        .map(item => item.idx);
+    }
+
+    function renderSimulator() {
+      const filteredIndices = getFilteredIndices();
+      const viewMode = document.getElementById("viewModeSelect").value;
+      const focusNavBox = document.getElementById("focusNavBox");
+
+      if (state.focusIndex >= filteredIndices.length) state.focusIndex = 0;
+
+      let indicesToRender = filteredIndices;
+      if (viewMode === "SINGLE" && filteredIndices.length > 0) {
+        focusNavBox.style.display = "flex";
+        document.getElementById("focusPositionText").textContent = `${state.focusIndex + 1} / ${filteredIndices.length}`;
+        indicesToRender = [filteredIndices[state.focusIndex]];
+      } else {
+        focusNavBox.style.display = "none";
+      }
+
+      document.getElementById("topCounterBadge").textContent =
+        `Exibindo: ${indicesToRender.length} de ${QUESTIONS.length} questões`;
+
+      const container = document.getElementById("questionsContainer");
+      if (indicesToRender.length === 0) {
+        container.innerHTML = `<div class="card"><p style="margin:0; color:var(--muted);">Nenhuma questão encontrada para este filtro de Passada/Microassunto.</p></div>`;
+        updateStats();
+        return;
+      }
+
+      container.innerHTML = indicesToRender.map(qIdx => {
+        const q = QUESTIONS[qIdx];
+        const sel = state.selected[qIdx];
+        const conf = state.confidence[qIdx];
+        const pass = state.pass[qIdx];
+        const chk = state.checked[qIdx];
+
+        const optionsHtml = q.options.map((optText, oIdx) => {
+          const tri = state.triage[qIdx][oIdx];
+          let btnCls = "option-btn";
+          if (tri === "cut") btnCls += " eliminated";
+          if (tri === "strong") btnCls += " strong-cand";
+          if (chk) {
+            if (oIdx === q.correct) btnCls += " correct";
+            else if (oIdx === sel && sel !== q.correct) btnCls += " wrong";
+          } else if (oIdx === sel) {
+            btnCls += " selected";
+          }
+
+          return `
+            <div class="option-row">
+              <button type="button" class="${btnCls}" onclick="selectOption(${qIdx}, ${oIdx})" ${chk ? "disabled" : ""}>
+                <span class="opt-letter">${LETTERS[oIdx]}</span>
+                <span class="opt-text">${optText}</span>
+              </button>
+              <div class="triage-actions">
+                <button type="button" class="triage-btn ${tri === 'strong' ? 'active-strong' : ''}" onclick="toggleTriage(${qIdx}, ${oIdx}, 'strong')" title="Candidata Forte">✔ Forte</button>
+                <button type="button" class="triage-btn ${tri === 'doubt' ? 'active-doubt' : ''}" onclick="toggleTriage(${qIdx}, ${oIdx}, 'doubt')" title="Dúvida">? Dúvida</button>
+                <button type="button" class="triage-btn ${tri === 'cut' ? 'active-cut' : ''}" onclick="toggleTriage(${qIdx}, ${oIdx}, 'cut')" title="Riscar alternativa">✖ Riscar</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        let calibrationHtml = "";
+        if (chk) {
+          const isHit = sel === q.correct;
+          if (isHit && conf === "A") {
+            calibrationHtml = `<div class="calibration-alert ok">✔ Domínio Confirmado [Classe A]: Você respondeu com certeza e acertou!</div>`;
+          } else if (!isHit && conf === "A") {
+            calibrationHtml = `<div class="calibration-alert danger">🚨 ALERTA DE PONTO CEGO ([A] + Erro): Você tinha certeza, mas caiu em pegadinha da FGV. Questão enviada automaticamente ao Caderno de Erros!</div>`;
+          } else if (isHit && conf === "C") {
+            calibrationHtml = `<div class="calibration-alert warn">⚠️ Falso Positivo ([C] + Acerto): Acertou no chute! Leia a explicação de todas as alternativas para não depender da sorte.</div>`;
+          } else if (conf === "B") {
+            calibrationHtml = `<div class="calibration-alert ${isHit ? 'ok' : 'warn'}">${isHit ? '✔ Acertou na Dúvida entre 2 [B]: Boa eliminação tática! Confira o detalhe que diferenciava as duas.' : `✖ Errou na Dúvida entre 2 [B]: Você marcou (${LETTERS[sel]}), mas o gabarito é (${LETTERS[q.correct]}).`}</div>`;
+          } else {
+            calibrationHtml = `<div class="calibration-alert ${isHit ? 'ok' : 'danger'}">${isHit ? '✔ Questão correta!' : `✖ Você marcou (${LETTERS[sel]}). Gabarito: (${LETTERS[q.correct]}).`}</div>`;
+          }
+        }
+
+        const expHtml = q.explanations.map((exp, oIdx) => `
+          <div class="exp-item">
+            <span class="${oIdx === q.correct ? 'tag-ok' : 'tag-err'}">(${LETTERS[oIdx]})</span> ${exp}
+          </div>
+        `).join("");
+
+        return `
+          <article class="card">
+            <div class="q-header">
+              <div>
+                <span class="q-badge-topic">${q.topic} · ${q.topicName}</span>
+                <strong style="margin-left:8px;">${q.title}</strong>
+              </div>
+              <div class="pass-selector">
+                <small style="color:var(--muted); font-weight:700;">Passada ABC:</small>
+                <button type="button" class="pass-btn ${pass === 'P1' ? 'active-P1' : ''}" onclick="setPass(${qIdx}, 'P1')">1ª [A] Rápida</button>
+                <button type="button" class="pass-btn ${pass === 'P2' ? 'active-P2' : ''}" onclick="setPass(${qIdx}, 'P2')">2ª [B] Trabalhosa</button>
+                <button type="button" class="pass-btn ${pass === 'P3' ? 'active-P3' : ''}" onclick="setPass(${qIdx}, 'P3')">3ª [C] Difícil</button>
+              </div>
+            </div>
+
+            <div class="q-statement">${q.statement}</div>
+            <div class="options-list">${optionsHtml}</div>
+
+            <div class="confidence-box">
+              <span><strong>Grau de Confiança ABC (obrigatório p/ calibração):</strong></span>
+              <div class="conf-btns">
+                <button type="button" class="conf-btn ${conf === 'A' ? 'active-A' : ''}" onclick="setConfidence(${qIdx}, 'A')" ${chk ? "disabled" : ""}>[A] Certeza</button>
+                <button type="button" class="conf-btn ${conf === 'B' ? 'active-B' : ''}" onclick="setConfidence(${qIdx}, 'B')" ${chk ? "disabled" : ""}>[B] Dúvida entre 2</button>
+                <button type="button" class="conf-btn ${conf === 'C' ? 'active-C' : ''}" onclick="setConfidence(${qIdx}, 'C')" ${chk ? "disabled" : ""}>[C] Chute / Difícil</button>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn primary" onclick="checkQuestion(${qIdx})" ${sel === null || chk ? "disabled" : ""}>
+                  ${chk ? "✔ Questão Corrigida" : "Corrigir Questão"}
+                </button>
+                ${!chk ? `<button type="button" class="btn" onclick="skipToSecondPass(${qIdx})">⏭ Pular p/ 2ª Passada [B]</button>` : ""}
+              </div>
+              ${chk ? `<button type="button" class="btn warn" onclick="addToErrorNotebook(${qIdx}, 'Manual')">+ Caderno de Erros</button>` : `<span style="font-size:0.75rem; color:var(--muted); font-weight:700;">Autoral — estilo simulado FGV</span>`}
+            </div>
+
+            ${calibrationHtml}
+
+            ${chk ? `
+              <div class="explanation-box">
+                <strong style="display:block; margin-bottom:8px;">Gabarito Comentado FGV (Alternativa por Alternativa):</strong>
+                ${expHtml}
+              </div>
+            ` : ""}
+          </article>
+        `;
+      }).join("");
+
+      updateStats();
+    }
+
+    window.selectOption = function(qIdx, oIdx) {
+      if (state.checked[qIdx]) return;
+      state.selected[qIdx] = oIdx;
+      if (!state.confidence[qIdx]) state.confidence[qIdx] = "B";
+      renderSimulator();
+    };
+
+    window.toggleTriage = function(qIdx, oIdx, type) {
+      if (state.checked[qIdx]) return;
+      state.triage[qIdx][oIdx] = state.triage[qIdx][oIdx] === type ? null : type;
+      renderSimulator();
+    };
+
+    window.setConfidence = function(qIdx, level) {
+      if (state.checked[qIdx]) return;
+      state.confidence[qIdx] = level;
+      renderSimulator();
+    };
+
+    window.setPass = function(qIdx, passCode) {
+      state.pass[qIdx] = passCode;
+      renderSimulator();
+    };
+
+    window.skipToSecondPass = function(qIdx) {
+      state.pass[qIdx] = "P2";
+      if (document.getElementById("viewModeSelect").value === "SINGLE") {
+        stepQuestion(1);
+      } else {
+        renderSimulator();
+      }
+    };
+
+    window.checkQuestion = function(qIdx) {
+      if (state.selected[qIdx] === null) return;
+      state.checked[qIdx] = true;
+      // Se errou com certeza [A] ou acertou no chute [C], envia automaticamente ao Caderno de Erros
+      const isCorrect = state.selected[qIdx] === QUESTIONS[qIdx].correct;
+      if ((!isCorrect && state.confidence[qIdx] === "A") || (isCorrect && state.confidence[qIdx] === "C")) {
+        addToErrorNotebook(qIdx, !isCorrect ? "Ponto Cego ([A] + Erro)" : "Falso Positivo ([C] + Acerto)", true);
+      }
+      renderSimulator();
+    };
+
+    window.checkAllVisible = function() {
+      QUESTIONS.forEach((_, idx) => {
+        if (state.selected[idx] !== null && !state.checked[idx]) {
+          checkQuestion(idx);
+        }
+      });
+      renderSimulator();
+    };
+
+    window.stepQuestion = function(delta) {
+      const filtered = getFilteredIndices();
+      if (!filtered.length) return;
+      state.focusIndex = (state.focusIndex + delta + filtered.length) % filtered.length;
+      renderSimulator();
+    };
+
+    window.resetSimulator = function() {
+      state.selected.fill(null);
+      state.confidence.fill(null);
+      state.checked.fill(false);
+      state.triage = QUESTIONS.map(() => Array(5).fill(null));
+      renderSimulator();
+    };
+
+    window.addToErrorNotebook = function(qIdx, reason = "Manual", silent = false) {
+      const q = QUESTIONS[qIdx];
+      if (!state.errorNotes.some(e => e.id === q.id)) {
+        state.errorNotes.push({
+          id: q.id,
+          topic: q.topic,
+          title: q.title,
+          reason,
+          conf: state.confidence[qIdx] || "N/A",
+          correctAnswer: LETTERS[q.correct],
+          explanation: q.explanations[q.correct]
+        });
+      }
+      renderErrorNotebook();
+      if (!silent) alert(`Questão "${q.title}" adicionada ao Caderno de Erros!`);
+    };
+
+    function renderErrorNotebook() {
+      const box = document.getElementById("errorNotebookList");
+      if (state.errorNotes.length === 0) {
+        box.innerHTML = `<p style="color:var(--muted);">Nenhuma questão no Caderno de Erros ainda. Pontos Cegos ([A] + Erro) e Falsos Positivos ([C] + Acerto) entram aqui automaticamente ao corrigir.</p>`;
+        return;
+      }
+      box.innerHTML = state.errorNotes.map(item => `
+        <div class="stat-card" style="margin-bottom:10px; border-left:4px solid var(--red);">
+          <span class="stat-label">${item.topic} · Motivo: ${item.reason} · Confiança: [${item.conf}]</span>
+          <strong style="display:block; margin:4px 0;">${item.title} (Gabarito: ${item.correctAnswer})</strong>
+          <small>${item.explanation}</small>
+        </div>
+      `).join("");
+    }
+
+    function computeAbcBadge(hits, total) {
+      if (total < 3) {
+        return `<span class="pillar-tag" style="background:#eef2f7; color:var(--muted);">Amostragem Insuficiente (${total}/3 mín.)</span>`;
+      }
+      const pct = Math.round((hits / total) * 100);
+      if (pct >= 80) return `<span class="pillar-tag tag-a">Classe A (${pct}%) — Domínio</span>`;
+      if (pct >= 60) return `<span class="pillar-tag tag-b">Classe B (${pct}%) — Intermediário</span>`;
+      return `<span class="pillar-tag tag-c">Classe C (${pct}%) — Prioridade Crítica</span>`;
+    }
+
+    window.registerRealAttempt = function() {
+      const topic = document.getElementById("realTopicSelect").value;
+      const hits = parseInt(document.getElementById("realHitsInput").value, 10);
+      const total = parseInt(document.getElementById("realTotalInput").value, 10);
+      if (isNaN(hits) || isNaN(total) || total <= 0 || hits < 0 || hits > total) {
+        alert("Informe valores válidos de acertos e total de questões reais da FGV.");
+        return;
+      }
+      TOPICS_META[topic].realHits += hits;
+      TOPICS_META[topic].realTotal += total;
+      document.getElementById("realHitsInput").value = "";
+      document.getElementById("realTotalInput").value = "";
+      updateStats();
+    };
+
+    function updateStats() {
+      const answered = state.selected.filter(v => v !== null).length;
+      let hits = 0;
+      let confAHit = 0, confAErr = 0, confBHit = 0, confBErr = 0, confCHit = 0;
+
+      const sessionByTopic = {
+        A04T01: { hits: 0, total: 0 },
+        A04T02: { hits: 0, total: 0 },
+        A05T01: { hits: 0, total: 0 },
+        A06T01: { hits: 0, total: 0 }
+      };
+
+      QUESTIONS.forEach((q, idx) => {
+        if (state.checked[idx]) {
+          const isCorrect = state.selected[idx] === q.correct;
+          const conf = state.confidence[idx];
+          if (isCorrect) hits++;
+          sessionByTopic[q.topic].total++;
+          if (isCorrect) sessionByTopic[q.topic].hits++;
+
+          if (conf === "A") { if (isCorrect) confAHit++; else confAErr++; }
+          if (conf === "B") { if (isCorrect) confBHit++; else confBErr++; }
+          if (conf === "C" && isCorrect) confCHit++;
+        }
+      });
+
+      document.getElementById("topScoreBadge").textContent =
+        `Respondidas: ${answered}/${QUESTIONS.length} · Acertos: ${hits}/${QUESTIONS.length}`;
+
+      document.getElementById("statConfAHit").textContent = String(confAHit);
+      document.getElementById("statConfAErr").textContent = String(confAErr);
+      document.getElementById("statConfBTotal").textContent = String(confBHit + confBErr);
+      document.getElementById("statConfBDetail").textContent = `${confBHit} acertos / ${confBErr} erros em dúvida`;
+      document.getElementById("statConfCHit").textContent = String(confCHit);
+
+      // Renderizar Tabela da Matriz ABC por Microassunto
+      const tbody = document.getElementById("topicMatrixBody");
+      tbody.innerHTML = Object.keys(TOPICS_META).map(tKey => {
+        const meta = TOPICS_META[tKey];
+        const sess = sessionByTopic[tKey];
+        const synHits = meta.baseSynHits + sess.hits;
+        const synTotal = meta.baseSynTotal + sess.total;
+        const synPct = synTotal > 0 ? `${Math.round((synHits / synTotal) * 100)}%` : "—";
+        const realPct = meta.realTotal > 0 ? `${Math.round((meta.realHits / meta.realTotal) * 100)}%` : "—";
+
+        // Prioriza questões reais FGV se houver >= 3; caso contrário mostra diagnóstico sintético identificado
+        const badgeHtml = meta.realTotal >= 3
+          ? computeAbcBadge(meta.realHits, meta.realTotal)
+          : `${computeAbcBadge(synHits, synTotal)} <small style="color:var(--muted); display:block;">(Base Sintética)</small>`;
+
+        return `
+          <tr>
+            <td><strong>${tKey}</strong></td>
+            <td>${meta.name}</td>
+            <td>${synHits} / ${synTotal} (${synPct})</td>
+            <td>${meta.realHits} / ${meta.realTotal} (${realPct})</td>
+            <td>${badgeHtml}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    renderSimulator();
+    renderErrorNotebook();
+  </script>
+</body>
+</html>
